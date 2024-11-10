@@ -190,7 +190,7 @@ export default function Leaderboard({ currentWallet }: { currentWallet?: string 
                 className={`flex items-center justify-between p-4 rounded-lg ${
                   currentWallet && entry.user.toLowerCase() === currentWallet.toLowerCase()
                     ? 'bg-purple-100 dark:bg-purple-950/20'
-                    : 'hover:bg-gray-50 dark:hover:bg-gray-800'
+                    : 'hover:bg-gray-50 dark:hover:bg-zinc-800/5'
                 }`}
               >
                 <div className="flex items-center gap-4">
