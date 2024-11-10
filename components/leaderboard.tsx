@@ -11,6 +11,23 @@ import { LeaderboardEntry, LeaderboardQueryParams } from "@/types/leaderboard";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import { Sun, Moon, RefreshCw } from "lucide-react";
+import { User } from '@privy-io/react-auth';
+import { usePrivy } from '@privy-io/react-auth';
+
+const getUserIdentifier = (user: any) => {
+  const userData = user.linked_accounts || user;
+  
+  if (userData.discord?.username) {
+    return userData.discord.username.replace('#0', '');
+  } else if (userData.google?.email) {
+    return userData.google.email;
+  } else if (userData.email?.address) {
+    return userData.email.address;
+  } else if (userData.wallet?.address) {
+    return userData.wallet.address;
+  }
+  return user.id || 'Unknown User';
+};
 
 function NoPointsMessage({ theme, setTheme, onRefresh }: { 
   theme: string | undefined, 
@@ -63,13 +80,17 @@ function NoPointsMessage({ theme, setTheme, onRefresh }: {
 }
 
 export default function Leaderboard({ currentWallet }: { currentWallet?: string }) {
+  const { user } = usePrivy();
   const [leaderboardData, setLeaderboardData] = useState<LeaderboardEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { theme, setTheme } = useTheme();
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const loadLeaderboard = async () => {
-    setIsLoading(true);
+  const loadLeaderboard = async (silent = false) => {
+    if (!silent) setIsLoading(true);
+    setIsRefreshing(true);
+    
     try {
       const data = await fetchLeaderboard({
         chain: "arbitrum-sepolia"
@@ -85,7 +106,8 @@ export default function Leaderboard({ currentWallet }: { currentWallet?: string 
       setError("Failed to load leaderboard data");
       console.error(err);
     } finally {
-      setIsLoading(false);
+      if (!silent) setIsLoading(false);
+      setIsRefreshing(false);
     }
   };
 
@@ -135,10 +157,13 @@ export default function Leaderboard({ currentWallet }: { currentWallet?: string 
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => loadLeaderboard()}
+                onClick={() => loadLeaderboard(true)}
                 className="rounded-full"
+                disabled={isRefreshing}
               >
-                <RefreshCw className="h-[1.2rem] w-[1.2rem]" />
+                <RefreshCw className={`h-[1.2rem] w-[1.2rem] transition-all duration-500 ${
+                  isRefreshing ? 'animate-spin' : ''
+                }`} />
                 <span className="sr-only">Refresh leaderboard</span>
               </Button>
               <Button
@@ -155,31 +180,33 @@ export default function Leaderboard({ currentWallet }: { currentWallet?: string 
           </div>
         </CardHeader>
         <CardContent>
-          <div className="space-y-1">
+          <div 
+            className="space-y-1 transition-all duration-500"
+            style={{ opacity: isRefreshing ? 0.7 : 1 }}
+          >
             {leaderboardData.map((entry, index) => (
-              <div
-                key={entry.user}
-                className={`flex items-center justify-between p-3 rounded-lg ${
-                  entry.user.toLowerCase() === currentWallet?.toLowerCase()
-                    ? 'bg-purple-100 dark:bg-purple-950/50 border border-purple-200 dark:border-purple-800'
-                    : ''
+              <div 
+                key={index} 
+                className={`flex items-center justify-between p-4 rounded-lg ${
+                  currentWallet && entry.user.toLowerCase() === currentWallet.toLowerCase()
+                    ? 'bg-purple-100 dark:bg-purple-950/20'
+                    : 'hover:bg-gray-50 dark:hover:bg-gray-800'
                 }`}
               >
                 <div className="flex items-center gap-4">
-                  <span className="text-purple-600 dark:text-purple-400 w-12 font-medium">
-                    #{index + 1}
+                  <span className="text-purple-500">#{index + 1}</span>
+                  <span>
+                    {currentWallet && entry.user.toLowerCase() === currentWallet.toLowerCase() 
+                      ? getUserIdentifier(user)
+                      : entry.user}
                   </span>
-                  <span className="font-medium font-mono">
-                    {entry.user}
-                    {entry.user.toLowerCase() === currentWallet?.toLowerCase() && (
-                      <span className="text-sm text-muted-foreground ml-2">(You)</span>
-                    )}
-                  </span>
+                  {currentWallet && entry.user.toLowerCase() === currentWallet.toLowerCase() && (
+                    <span className="text-gray-500">(You)</span>
+                  )}
                 </div>
-                <div className="flex items-center">
-                  <span className="font-medium text-purple-600 dark:text-purple-400">
-                    {entry.xp_rewarded} XP
-                  </span>
+                <div className="flex items-center gap-2">
+                  <span className="text-purple-500">{entry.xp_rewarded}</span>
+                  <span className="text-purple-500">XP</span>
                 </div>
               </div>
             ))}
