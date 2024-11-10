@@ -16,9 +16,9 @@ export default function Home() {
       <div className="flex flex-col items-center justify-center min-h-screen">
         <button 
           onClick={() => login()}
-          className="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600"
+          className="px-4 py-2 text-white bg-purple-600 rounded hover:bg-purple-700"
         >
-          Login with Privy
+          Login to Leaderboard
         </button>
       </div>
     );
