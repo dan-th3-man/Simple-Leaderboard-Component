@@ -10,24 +10,39 @@ import { fetchLeaderboard } from "@/services/leaderboardApi";
 import { LeaderboardEntry, LeaderboardQueryParams } from "@/types/leaderboard";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
-import { Sun, Moon } from "lucide-react";
+import { Sun, Moon, RefreshCw } from "lucide-react";
 
-function NoPointsMessage({ theme, setTheme }: { theme: string | undefined, setTheme: (theme: string) => void }) {
+function NoPointsMessage({ theme, setTheme, onRefresh }: { 
+  theme: string | undefined, 
+  setTheme: (theme: string) => void,
+  onRefresh: () => Promise<void>
+}) {
   return (
     <Card className="w-full max-w-2xl mx-auto bg-white dark:bg-zinc-950 shadow-lg">
       <CardHeader className="space-y-1 pb-4">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold tracking-tight">Welcome to the Leaderboard!</h1>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-            className="rounded-full"
-          >
-            <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-            <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-            <span className="sr-only">Toggle theme</span>
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onRefresh}
+              className="rounded-full"
+            >
+              <RefreshCw className="h-[1.2rem] w-[1.2rem]" />
+              <span className="sr-only">Refresh leaderboard</span>
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              className="rounded-full"
+            >
+              <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+              <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+              <span className="sr-only">Toggle theme</span>
+            </Button>
+          </div>
         </div>
       </CardHeader>
       <CardContent>
@@ -53,33 +68,35 @@ export default function Leaderboard({ currentWallet }: { currentWallet?: string 
   const [error, setError] = useState<string | null>(null);
   const { theme, setTheme } = useTheme();
 
-  useEffect(() => {
-    const loadLeaderboard = async () => {
-      try {
-        const data = await fetchLeaderboard({
-          chain: "arbitrum-sepolia"
-        } as LeaderboardQueryParams);
-        
-        if (Array.isArray(data)) {
-          setLeaderboardData(data);
-        } else {
-          console.error('Invalid data format:', data);
-          setError('Invalid data format received');
-        }
-      } catch (err) {
-        setError("Failed to load leaderboard data");
-        console.error(err);
-      } finally {
-        setIsLoading(false);
+  const loadLeaderboard = async () => {
+    setIsLoading(true);
+    try {
+      const data = await fetchLeaderboard({
+        chain: "arbitrum-sepolia"
+      } as LeaderboardQueryParams);
+      
+      if (Array.isArray(data)) {
+        setLeaderboardData(data);
+      } else {
+        console.error('Invalid data format:', data);
+        setError('Invalid data format received');
       }
-    };
+    } catch (err) {
+      setError("Failed to load leaderboard data");
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
+  useEffect(() => {
     loadLeaderboard();
   }, []);
 
   const userHasPoints = () => {
+    if (!currentWallet) return false;
     return leaderboardData.some(
-      entry => entry.user.toLowerCase() === currentWallet?.toLowerCase()
+      entry => entry.user.toLowerCase() === currentWallet.toLowerCase()
     );
   };
 
@@ -94,7 +111,7 @@ export default function Leaderboard({ currentWallet }: { currentWallet?: string 
   if (!userHasPoints()) {
     return (
       <div className="container mx-auto p-4">
-        <NoPointsMessage theme={theme} setTheme={setTheme} />
+        <NoPointsMessage theme={theme} setTheme={setTheme} onRefresh={loadLeaderboard} />
       </div>
     );
   }
@@ -114,16 +131,27 @@ export default function Leaderboard({ currentWallet }: { currentWallet?: string 
                 {leaderboardData.length} {leaderboardData.length === 1 ? 'Participant' : 'Participants'}
               </p>
             </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-              className="rounded-full"
-            >
-              <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-              <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-              <span className="sr-only">Toggle theme</span>
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => loadLeaderboard()}
+                className="rounded-full"
+              >
+                <RefreshCw className="h-[1.2rem] w-[1.2rem]" />
+                <span className="sr-only">Refresh leaderboard</span>
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                className="rounded-full"
+              >
+                <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                <span className="sr-only">Toggle theme</span>
+              </Button>
+            </div>
           </div>
         </CardHeader>
         <CardContent>
