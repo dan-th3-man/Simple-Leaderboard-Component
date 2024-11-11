@@ -6,26 +6,12 @@ import { PropsWithChildren } from 'react';
 import { ThemeProvider } from 'next-themes'
 
 export function PrivyProvider({ children }: PropsWithChildren) {
-  const router = useRouter();
-
-  const getUserIdentifier = (user: User) => {
-    if (user.discord?.username) {
-      return user.discord.username;
-    } else if (user.google?.email) {
-      return user.google.email;
-    } else if (user.email?.address) {
-      return user.email.address;
-    } else if (user.wallet?.address) {
-      return user.wallet.address;
-    }
-    return 'Unknown User';
-  };
 
   return (
     <ThemeProvider defaultTheme="dark" attribute="class">
       <Provider
         appId={process.env.NEXT_PUBLIC_PRIVY_APP_ID!}
-        onSuccess={(user) => {
+        onSuccess={(user: User) => {
           console.log(`User ${user.id} logged in!`);
         }}
         config={{
