@@ -15,7 +15,7 @@ A modern, responsive leaderboard component built with Next.js, Privy authenticat
 ## Deploy
 Instantly deploy your own copy of the template using Vercel:
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fopen-format%2Fsimple-leaderboard&env=NEXT_PUBLIC_OPENFORMAT_API_KEY,NEXT_PUBLIC_OPENFORMAT_DAPP_ID,NEXT_PUBLIC_PRIVY_APP_ID,PRIVY_APP_SECRET)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fopen-format%2Fsimple-leaderboard&env=NEXT_PUBLIC_OPENFORMAT_API_KEY,NEXT_PUBLIC_OPENFORMAT_DAPP_ID,NEXT_PUBLIC_PRIVY_APP_ID,PRIVY_APP_SECRET) [![![Deploy with Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/open-format/simple-leaderboard)
 
 ## Tech Stack
 
