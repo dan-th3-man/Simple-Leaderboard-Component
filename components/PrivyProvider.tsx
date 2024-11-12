@@ -1,7 +1,6 @@
 'use client';
 
 import { PrivyProvider as Provider, User } from '@privy-io/react-auth';
-import { useRouter } from 'next/navigation';
 import { PropsWithChildren } from 'react';
 import { ThemeProvider } from 'next-themes'
 
