@@ -213,23 +213,6 @@ export default function Leaderboard({ currentWallet }: { currentWallet?: string 
   const { theme, setTheme } = useTheme()
   const [isRefreshing, setIsRefreshing] = useState(false)
 
-  const loadLeaderboard = useCallback(async (silent = false) => {
-    if (!silent) setIsLoading(true)
-    setIsRefreshing(true)
-    
-    try {
-      const data = await fetchLeaderboardWithChanges()
-      setLeaderboardData(data)
-      updateVisibleData(data)
-    } catch (err) {
-      setError("Failed to load leaderboard data")
-      console.error(err)
-    } finally {
-      if (!silent) setIsLoading(false)
-      setIsRefreshing(false)
-    }
-  }, [updateVisibleData])
-
   const updateVisibleData = useCallback((data: LeaderboardEntry[]) => {
     if (!currentWallet) {
       setVisibleData(data.slice(0, 7))
@@ -246,6 +229,23 @@ export default function Leaderboard({ currentWallet }: { currentWallet?: string 
     const end = Math.min(data.length, userIndex + 4)
     setVisibleData(data.slice(start, end))
   }, [currentWallet])
+
+  const loadLeaderboard = useCallback(async (silent = false) => {
+    if (!silent) setIsLoading(true)
+    setIsRefreshing(true)
+    
+    try {
+      const data = await fetchLeaderboardWithChanges()
+      setLeaderboardData(data)
+      updateVisibleData(data)
+    } catch (err) {
+      setError("Failed to load leaderboard data")
+      console.error(err)
+    } finally {
+      if (!silent) setIsLoading(false)
+      setIsRefreshing(false)
+    }
+  }, [updateVisibleData])
 
   useEffect(() => {
     loadLeaderboard()
