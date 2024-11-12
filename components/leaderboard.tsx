@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { fetchLeaderboardWithChanges } from "@/services/leaderboardApi"
 import { LeaderboardEntry } from "@/types/leaderboard"
@@ -49,7 +49,7 @@ function NoPointsMessage({ theme, setTheme, onRefresh }: {
           <Trophy className="h-4 w-4" />
           <AlertTitle>No Points Yet</AlertTitle>
           <AlertDescription>
-            You haven't earned any points yet. Start your journey to the top of the leaderboard!
+            You haven&apos;t earned any points yet. Start your journey to the top of the leaderboard!
           </AlertDescription>
         </Alert>
         
@@ -213,7 +213,7 @@ export default function Leaderboard({ currentWallet }: { currentWallet?: string 
   const { theme, setTheme } = useTheme()
   const [isRefreshing, setIsRefreshing] = useState(false)
 
-  const loadLeaderboard = async (silent = false) => {
+  const loadLeaderboard = useCallback(async (silent = false) => {
     if (!silent) setIsLoading(true)
     setIsRefreshing(true)
     
@@ -228,9 +228,9 @@ export default function Leaderboard({ currentWallet }: { currentWallet?: string 
       if (!silent) setIsLoading(false)
       setIsRefreshing(false)
     }
-  }
+  }, [updateVisibleData])
 
-  const updateVisibleData = (data: LeaderboardEntry[]) => {
+  const updateVisibleData = useCallback((data: LeaderboardEntry[]) => {
     if (!currentWallet) {
       setVisibleData(data.slice(0, 7))
       return
@@ -245,15 +245,15 @@ export default function Leaderboard({ currentWallet }: { currentWallet?: string 
     const start = Math.max(0, userIndex - 3)
     const end = Math.min(data.length, userIndex + 4)
     setVisibleData(data.slice(start, end))
-  }
+  }, [currentWallet])
 
   useEffect(() => {
     loadLeaderboard()
-  }, [])
+  }, [loadLeaderboard])
 
   useEffect(() => {
     updateVisibleData(leaderboardData)
-  }, [leaderboardData, currentWallet])
+  }, [leaderboardData, currentWallet, updateVisibleData])
 
   const userHasPoints = () => {
     if (!currentWallet) return false
@@ -323,7 +323,7 @@ export default function Leaderboard({ currentWallet }: { currentWallet?: string 
         <CardHeader className="space-y-1 pb-4">
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="text-2xl font-bold tracking-tight">Dan's Leaderboard</CardTitle>
+              <CardTitle className="text-2xl font-bold tracking-tight">Dan&apos;s Leaderboard</CardTitle>
               <p className="text-sm text-muted-foreground mt-1">
                 {leaderboardData.length} {leaderboardData.length === 1 ? 'Participant' : 'Participants'}
               </p>
