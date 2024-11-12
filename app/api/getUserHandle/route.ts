@@ -11,9 +11,26 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const wallet = searchParams.get('wallet');
 
-  if (!process.env.NEXT_PUBLIC_PRIVY_APP_ID || !process.env.PRIVY_APP_SECRET) {
-    console.error('Missing Privy environment variables');
-    return NextResponse.json({ handle: truncateAddress(wallet || '') });
+  // Check each environment variable separately
+  const missingVars = [];
+  if (!process.env.NEXT_PUBLIC_PRIVY_APP_ID) {
+    missingVars.push('NEXT_PUBLIC_PRIVY_APP_ID');
+  }
+  if (!process.env.PRIVY_APP_SECRET) {
+    missingVars.push('PRIVY_APP_SECRET');
+  }
+
+  if (missingVars.length > 0) {
+    console.error(`Missing Privy environment variables: ${missingVars.join(', ')}`);
+    return NextResponse.json({ 
+      handle: truncateAddress(wallet || ''),
+      error: `Missing environment variables: ${missingVars.join(', ')}`,
+      debug: {
+        missingVars,
+        hasAppId: !!process.env.NEXT_PUBLIC_PRIVY_APP_ID,
+        hasSecret: !!process.env.PRIVY_APP_SECRET
+      }
+    });
   }
 
   if (!wallet) {
@@ -21,8 +38,8 @@ export async function GET(request: Request) {
   }
 
   const privyClient = new PrivyClient(
-    process.env.NEXT_PUBLIC_PRIVY_APP_ID,
-    process.env.PRIVY_APP_SECRET
+    process.env.NEXT_PUBLIC_PRIVY_APP_ID as string,
+    process.env.PRIVY_APP_SECRET as string
   );
 
   try {
