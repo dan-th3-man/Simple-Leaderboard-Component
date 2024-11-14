@@ -1,5 +1,5 @@
 import "./globals.css";
-import { ThemeProvider } from "../components/theme-provider";
+import { ThemeProvider } from "@/components/theme-provider";
 import { PrivyProvider } from '@/components/PrivyProvider';
 
 export default function RootLayout({
