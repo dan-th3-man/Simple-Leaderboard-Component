@@ -32,14 +32,14 @@ Before you begin, you'll need to set up accounts and configure the following:
 ### Deploy
 Instantly deploy your own copy of the template using Vercel or Netlify:
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fopen-format%2Fon-chain-leaderboard&env=NEXT_PUBLIC_OPENFORMAT_API_KEY,NEXT_PUBLIC_OPENFORMAT_DAPP_ID,NEXT_PUBLIC_PRIVY_APP_ID,PRIVY_APP_SECRET) [![Deploy with Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/open-format/on-chain-leaderboard)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fdan-th3-man%2Fon-chain-leaderboard&env=NEXT_PUBLIC_OPENFORMAT_API_KEY,NEXT_PUBLIC_OPENFORMAT_DAPP_ID,NEXT_PUBLIC_PRIVY_APP_ID,PRIVY_APP_SECRET) [![Deploy with Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/dan-th3-man/on-chain-leaderboard)
 
 
 ### Local Development
 
 1. Clone the repository
 ```
-git clone https://github.com/open-format/on-chain-leaderboard.git
+git clone https://github.com/dan-th3-man/on-chain-leaderboard.git
 cd on-chain-leaderboard
 ```
 
