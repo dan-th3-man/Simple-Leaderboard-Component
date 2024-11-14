@@ -11,6 +11,10 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { cn } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton" 
 
+/**
+ * Component shown when user has no points
+ * Displays information about how to earn points and start participating
+ */
 function NoPointsMessage({ theme, setTheme, onRefresh }: { 
   theme: string | undefined, 
   setTheme: (theme: string) => void,
@@ -90,7 +94,10 @@ function NoPointsMessage({ theme, setTheme, onRefresh }: {
   )
 }
 
-
+/**
+ * Individual row in the leaderboard
+ * Displays position, user handle, points, and position changes
+ */
 const LeaderboardRow = ({ entry, position, currentWallet}: { 
   entry: LeaderboardEntry
   position: number
@@ -205,6 +212,10 @@ const LeaderboardRow = ({ entry, position, currentWallet}: {
   )
 }
 
+/**
+ * Main Leaderboard Component
+ * Displays user rankings with points and position changes
+ */
 export default function Leaderboard({ currentWallet }: { currentWallet?: string }) {
   const [leaderboardData, setLeaderboardData] = useState<LeaderboardEntry[]>([])
   const [visibleData, setVisibleData] = useState<LeaderboardEntry[]>([])
@@ -213,6 +224,11 @@ export default function Leaderboard({ currentWallet }: { currentWallet?: string 
   const { theme, setTheme } = useTheme()
   const [isRefreshing, setIsRefreshing] = useState(false)
 
+  /**
+   * Updates visible data to show relevant positions
+   * Shows 7 positions: current user's position ±3 positions
+   * If user not found, shows top 7
+   */
   const updateVisibleData = useCallback((data: LeaderboardEntry[]) => {
     if (!currentWallet) {
       setVisibleData(data.slice(0, 7))
